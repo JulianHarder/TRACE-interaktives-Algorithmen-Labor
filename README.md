@@ -121,28 +121,4 @@ trace/
 └── screenshots/
 ```
 
-### Einen neuen Algorithmus hinzufügen
 
-Zum Beispiel einen weiteren Sortier-Algorithmus: neue Datei in `js/sortieren/` anlegen, die per `TRACE.sortieren.registriere({ id, name, info, code, sortiere })` eine Generator-Funktion registriert, und die Datei in `index.html` einbinden. Er erscheint danach automatisch in der Auswahl – ohne dass an anderer Stelle etwas geändert werden muss.
-
-## Stand
-
-- [x] **Etappe 1:** Grundgerüst, Startseite, Player, Bubble / Selection / Insertion Sort, Pseudocode-Ansicht
-- [x] **Etappe 2:** Merge Sort, Quicksort, Eingabe-Varianten, eigene Zahlen, Code zusätzlich in C# und JavaScript
-- [x] **Etappe 3:** Lineare und binäre Suche, vollständige Schreibtischtest-Tabelle für alle bisherigen Algorithmen
-- [x] **Etappe 4:** Wegfindung – Gitter mit Wänden, Start und Ziel per Maus, BFS, DFS, Dijkstra und A*
-- [x] **Etappe 5:** Datenstrukturen – Stapel, Warteschlange und binärer Suchbaum
-- [ ] **Etappe 6:** Feinschliff und Veröffentlichung
-  - [x] Heller/dunkler Modus (System-Erkennung + manueller Umschalter)
-  - [x] Handy-Ansicht
-  - [x] Tastaturkürzel
-  - [x] README mit Screenshots
-  - [ ] Veröffentlichung über GitHub Pages
-
-## Was ich dabei gelernt habe
-
-*(Hier ein paar eigene Sätze ergänzen, bevor es online geht – zum Beispiel: Was war überraschend? Welcher Algorithmus hat am längsten gedauert, bis das Prinzip klar war? Was würde ich beim nächsten Mal anders machen?)*
-
--
--
--
