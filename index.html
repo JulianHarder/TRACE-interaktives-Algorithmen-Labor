@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="TRACE – interaktives Algorithmen-Labor: Algorithmen Schritt für Schritt sehen, verstehen und selbst ausprobieren.">
+  <title>TRACE – interaktives Algorithmen-Labor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Vor dem ersten Rendern anwenden, damit die Seite nicht kurz im falschen
+    // Farbschema aufblitzt, bevor js/ui/theme.js unten geladen ist.
+    (function () {
+      try {
+        var gespeichert = localStorage.getItem("trace-theme");
+        if (gespeichert === "hell" || gespeichert === "dunkel") {
+          document.documentElement.dataset.theme = gespeichert;
+        }
+      } catch (fehler) { /* z. B. lokaler Speicher gesperrt (privates Fenster) – dann bleibt es beim System */ }
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="kopf">
+    <div class="kopf-innen">
+      <a class="marke" href="#/">TRACE</a>
+      <nav class="hauptnav" aria-label="Bereiche">
+        <a href="#/sortieren" data-ziel="sortieren">Sortieren</a>
+        <a href="#/suchen" data-ziel="suchen">Suchen</a>
+        <a href="#/wegfindung" data-ziel="wegfindung">Wegfindung</a>
+        <a href="#/strukturen" data-ziel="strukturen">Strukturen</a>
+      </nav>
+      <button type="button" class="knopf knopf-klein knopf-theme" id="theme-knopf">🖥️</button>
+    </div>
+  </header>
+
+  <main class="inhalt">
+
+    <!-- ============ Startseite ============ -->
+    <section class="seite start" data-seite="start">
+      <div class="start-titel">
+        <h1>TRACE</h1>
+        <p class="untertitel">interaktives Algorithmen-Labor</p>
+        <p class="einleitung">
+          Algorithmen bei der Arbeit zusehen: Jeder Schritt wird sichtbar gemacht,
+          in einem Satz erklärt und der passenden Code-Zeile gegenübergestellt.
+        </p>
+      </div>
+
+      <div class="kacheln">
+        <a class="kachel" href="#/sortieren">
+          <svg class="kachel-bild" viewBox="0 0 80 48" aria-hidden="true">
+            <rect x="4"  y="28" width="10" height="16" rx="2" class="bild-neutral"/>
+            <rect x="19" y="12" width="10" height="32" rx="2" class="bild-pruefen"/>
+            <rect x="34" y="20" width="10" height="24" rx="2" class="bild-pruefen"/>
+            <rect x="49" y="34" width="10" height="10" rx="2" class="bild-neutral"/>
+            <rect x="64" y="4"  width="10" height="40" rx="2" class="bild-fertig"/>
+          </svg>
+          <h2>Sortieren</h2>
+          <p>Bubble Sort, Selection Sort, Insertion Sort</p>
+        </a>
+
+        <a class="kachel" href="#/suchen">
+          <svg class="kachel-bild" viewBox="0 0 80 48" aria-hidden="true">
+            <rect x="2"  y="16" width="14" height="16" rx="2" class="bild-leer"/>
+            <rect x="18" y="16" width="14" height="16" rx="2" class="bild-leer"/>
+            <rect x="34" y="16" width="14" height="16" rx="2" class="bild-pruefen"/>
+            <rect x="50" y="16" width="14" height="16" rx="2" class="bild-bereich"/>
+            <rect x="66" y="16" width="12" height="16" rx="2" class="bild-bereich"/>
+          </svg>
+          <h2>Suchen</h2>
+          <p>Lineare und binäre Suche</p>
+        </a>
+
+        <a class="kachel" href="#/wegfindung">
+          <svg class="kachel-bild" viewBox="0 0 80 48" aria-hidden="true">
+            <g class="bild-leer">
+              <rect x="4" y="4" width="12" height="12" rx="2"/><rect x="18" y="4" width="12" height="12" rx="2"/>
+              <rect x="46" y="4" width="12" height="12" rx="2"/><rect x="60" y="4" width="12" height="12" rx="2"/>
+              <rect x="4" y="32" width="12" height="12" rx="2"/><rect x="46" y="32" width="12" height="12" rx="2"/>
+            </g>
+            <rect x="32" y="4" width="12" height="40" rx="2" class="bild-wand"/>
+            <g class="bild-bereich">
+              <rect x="4" y="18" width="12" height="12" rx="2"/><rect x="18" y="18" width="12" height="12" rx="2"/>
+              <rect x="18" y="32" width="12" height="12" rx="2"/>
+            </g>
+            <rect x="60" y="32" width="12" height="12" rx="2" class="bild-fertig"/>
+          </svg>
+          <h2>Wegfindung</h2>
+          <p>BFS, DFS, Dijkstra und A*</p>
+        </a>
+
+        <a class="kachel" href="#/strukturen">
+          <svg class="kachel-bild" viewBox="0 0 80 48" aria-hidden="true">
+            <line x1="40" y1="10" x2="22" y2="26" class="bild-linie"/>
+            <line x1="40" y1="10" x2="58" y2="26" class="bild-linie"/>
+            <line x1="22" y1="26" x2="12" y2="40" class="bild-linie"/>
+            <line x1="58" y1="26" x2="68" y2="40" class="bild-linie"/>
+            <circle cx="40" cy="10" r="6" class="bild-bereich"/>
+            <circle cx="22" cy="26" r="6" class="bild-neutral"/>
+            <circle cx="58" cy="26" r="6" class="bild-bereich"/>
+            <circle cx="12" cy="40" r="6" class="bild-neutral"/>
+            <circle cx="68" cy="40" r="6" class="bild-fertig"/>
+          </svg>
+          <h2>Strukturen</h2>
+          <p>Stapel, Warteschlange, Suchbaum</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ Sortieren ============ -->
+    <section class="seite labor" data-seite="sortieren" hidden>
+      <div class="labor-kopf">
+        <div class="auswahl" id="sort-auswahl" role="group" aria-label="Algorithmus wählen"></div>
+        <div class="einstellungen">
+          <label class="regler">
+            <span>Eingabe</span>
+            <select id="sort-eingabe">
+              <option value="zufaellig">Zufällig</option>
+              <option value="sortiert">Bereits sortiert</option>
+              <option value="umgekehrt">Umgekehrt sortiert</option>
+              <option value="fastSortiert">Fast sortiert</option>
+              <option value="gleicheWerte">Viele gleiche Werte</option>
+              <option value="eigene">Eigene Zahlen</option>
+            </select>
+          </label>
+          <label class="regler" id="sort-anzahl-feld">
+            <span>Anzahl</span>
+            <input type="range" id="sort-anzahl" min="5" max="100" value="20">
+            <output id="sort-anzahl-wert" for="sort-anzahl">20</output>
+          </label>
+          <button type="button" class="knopf" id="sort-mischen" title="Neue Zufallszahlen (R)">Neu mischen</button>
+        </div>
+      </div>
+
+      <div class="eigene-zahlen" id="sort-eigene-feld" hidden>
+        <label class="eigene-label">
+          <span class="sr-nur">Eigene Zahlen, durch Komma getrennt</span>
+          <input type="text" id="sort-eigene-eingabe" placeholder="z. B. 5, 3, 8, 1, 9" inputmode="numeric" autocomplete="off">
+        </label>
+        <button type="button" class="knopf" id="sort-eigene-anwenden">Übernehmen</button>
+        <p class="eigene-hinweis" id="sort-eigene-hinweis" aria-live="polite"></p>
+      </div>
+
+      <p class="hinweis-klein">Tipp: TRACE ist für große Bildschirme gedacht, funktioniert aber auch hier.</p>
+
+      <div class="steuerung">
+        <div class="steuerung-knoepfe">
+          <button type="button" class="knopf" id="sort-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+          <button type="button" class="knopf knopf-haupt" id="sort-start" title="Start / Pause (Leertaste)">▶ Start</button>
+          <button type="button" class="knopf" id="sort-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+        </div>
+        <label class="regler">
+          <span>Tempo</span>
+          <input type="range" id="sort-tempo" min="1" max="10" value="5">
+        </label>
+        <button type="button" class="knopf" id="sort-zuruecksetzen" title="Zurück zum Anfang, gleiche Zahlen">↺ Zurücksetzen</button>
+      </div>
+
+      <div class="labor-raster">
+        <div class="feld feld-bild">
+          <div class="infokasten" id="sort-info"></div>
+          <canvas id="sort-leinwand" class="leinwand" role="img" aria-label="Zahlen als Balken"></canvas>
+          <ul class="legende" aria-label="Farbcode">
+            <li><span class="muster muster-neutral"></span>unberührt</li>
+            <li><span class="muster muster-pruefen">?</span>wird verglichen</li>
+            <li><span class="muster muster-aendern">↔</span>wird getauscht</li>
+            <li><span class="muster muster-bereich"></span>aktueller Bereich / gemerkt</li>
+            <li><span class="muster muster-fertig">✓</span>fertig</li>
+          </ul>
+        </div>
+
+        <aside class="seitenleiste">
+          <div class="feld feld-code">
+            <div class="feld-kopf">
+              <h2 class="feld-titel">Code</h2>
+              <div class="feld-kopf-werkzeuge">
+                <div class="auswahl auswahl-klein" id="sort-sprache" role="group" aria-label="Sprache wählen">
+                  <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                  <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                  <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                </div>
+                <button type="button" class="knopf knopf-klein" id="sort-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+              </div>
+            </div>
+            <div class="code" id="sort-code"></div>
+          </div>
+          <div class="feld feld-variablen">
+            <h2 class="feld-titel">Schreibtischtest</h2>
+            <div class="schreibtisch" id="sort-schreibtisch"></div>
+          </div>
+        </aside>
+      </div>
+
+      <p class="erklaerung" id="sort-erklaerung" aria-live="polite"></p>
+
+      <div class="zaehler">
+        <span>Vergleiche: <strong id="sort-vergleiche">0</strong></span>
+        <span>Vertauschungen: <strong id="sort-vertauschungen">0</strong></span>
+        <span>Schritte: <strong id="sort-schritte">0</strong></span>
+      </div>
+    </section>
+
+    <!-- ============ Suchen ============ -->
+    <section class="seite labor" data-seite="suchen" hidden>
+      <div class="labor-kopf">
+        <div class="auswahl" id="suche-auswahl" role="group" aria-label="Algorithmus wählen"></div>
+        <div class="einstellungen">
+          <label class="regler">
+            <span>Anzahl</span>
+            <input type="range" id="suche-anzahl" min="5" max="60" value="15">
+            <output id="suche-anzahl-wert" for="suche-anzahl">15</output>
+          </label>
+          <button type="button" class="knopf" id="suche-mischen" title="Neue Zufallszahlen (R)">Neu mischen</button>
+        </div>
+      </div>
+
+      <div class="einstellungen">
+        <label class="regler">
+          <span>Ziel</span>
+          <input type="number" id="suche-ziel" inputmode="numeric">
+        </label>
+        <button type="button" class="knopf" id="suche-ziel-enthalten">Zufällige enthaltene Zahl</button>
+        <button type="button" class="knopf" id="suche-ziel-fehlt">Zahl, die nicht enthalten ist</button>
+      </div>
+
+      <p class="info-hinweis" id="suche-sortier-hinweis" hidden>
+        Die binäre Suche funktioniert nur bei aufsteigend sortierten Werten – TRACE sortiert die Zahlen dafür automatisch.
+        Die lineare Suche daneben zeigt die Zahlen weiter in der ursprünglichen Reihenfolge.
+      </p>
+
+      <p class="hinweis-klein">Tipp: TRACE ist für große Bildschirme gedacht, funktioniert aber auch hier.</p>
+
+      <div class="steuerung">
+        <div class="steuerung-knoepfe">
+          <button type="button" class="knopf" id="suche-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+          <button type="button" class="knopf knopf-haupt" id="suche-start" title="Start / Pause (Leertaste)">▶ Start</button>
+          <button type="button" class="knopf" id="suche-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+        </div>
+        <label class="regler">
+          <span>Tempo</span>
+          <input type="range" id="suche-tempo" min="1" max="10" value="5">
+        </label>
+        <button type="button" class="knopf" id="suche-zuruecksetzen" title="Zurück zum Anfang, gleiche Zahlen">↺ Zurücksetzen</button>
+      </div>
+
+      <div class="labor-raster">
+        <div class="feld feld-bild">
+          <div class="infokasten" id="suche-info"></div>
+          <div class="kaesten-wrapper">
+            <canvas id="suche-leinwand" class="leinwand-kaesten" role="img" aria-label="Zahlen als Kästchen"></canvas>
+          </div>
+          <ul class="legende" aria-label="Farbcode">
+            <li><span class="muster muster-neutral"></span>unberührt</li>
+            <li><span class="muster muster-pruefen">?</span>wird geprüft</li>
+            <li><span class="muster muster-bereich"></span>aktueller Suchbereich</li>
+            <li><span class="muster muster-fertig">✓</span>gefunden</li>
+          </ul>
+        </div>
+
+        <aside class="seitenleiste">
+          <div class="feld feld-code">
+            <div class="feld-kopf">
+              <h2 class="feld-titel">Code</h2>
+              <div class="feld-kopf-werkzeuge">
+                <div class="auswahl auswahl-klein" id="suche-sprache" role="group" aria-label="Sprache wählen">
+                  <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                  <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                  <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                </div>
+                <button type="button" class="knopf knopf-klein" id="suche-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+              </div>
+            </div>
+            <div class="code" id="suche-code"></div>
+          </div>
+          <div class="feld feld-variablen">
+            <h2 class="feld-titel">Schreibtischtest</h2>
+            <div class="schreibtisch" id="suche-schreibtisch"></div>
+          </div>
+        </aside>
+      </div>
+
+      <p class="erklaerung" id="suche-erklaerung" aria-live="polite"></p>
+
+      <div class="zaehler">
+        <span>Vergleiche: <strong id="suche-vergleiche">0</strong></span>
+        <span>Schritte: <strong id="suche-schritte">0</strong></span>
+      </div>
+    </section>
+
+    <!-- ============ Wegfindung ============ -->
+    <section class="seite labor" data-seite="wegfindung" hidden>
+      <div class="labor-kopf">
+        <div class="auswahl" id="weg-auswahl" role="group" aria-label="Algorithmus wählen"></div>
+        <div class="einstellungen">
+          <div class="auswahl" id="weg-werkzeug" role="group" aria-label="Werkzeug wählen">
+            <button type="button" data-werkzeug="wand" aria-pressed="true" title="Wände sind nicht begehbar">🧱 Wand</button>
+            <button type="button" data-werkzeug="sumpf" aria-pressed="false" title="Sumpf ist begehbar, kostet aber mehr als normaler Boden">🟫 Sumpf</button>
+          </div>
+          <button type="button" class="knopf" id="weg-zufall" title="Neues zufälliges Gelände (R)">Zufälliges Gelände</button>
+          <button type="button" class="knopf" id="weg-leeren">Gelände löschen</button>
+        </div>
+      </div>
+
+      <p class="info-hinweis">
+        Wähle ein Werkzeug und klicke und ziehe, um es einzuzeichnen oder wieder zu löschen. Ziehe S (Start) oder Z (Ziel), um sie zu verschieben. Sumpf-Felder kosten mehr als normaler Boden – so zeigt sich der Unterschied zwischen Breitensuche und Dijkstra/A*.
+      </p>
+
+      <div class="steuerung">
+        <div class="steuerung-knoepfe">
+          <button type="button" class="knopf" id="weg-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+          <button type="button" class="knopf knopf-haupt" id="weg-start" title="Start / Pause (Leertaste)">▶ Start</button>
+          <button type="button" class="knopf" id="weg-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+        </div>
+        <label class="regler">
+          <span>Tempo</span>
+          <input type="range" id="weg-tempo" min="1" max="10" value="5">
+        </label>
+        <button type="button" class="knopf" id="weg-zuruecksetzen" title="Zurück zum Anfang, gleiches Gitter">↺ Zurücksetzen</button>
+      </div>
+
+      <div class="labor-raster">
+        <div class="feld feld-bild">
+          <div class="infokasten" id="weg-info"></div>
+          <div class="gitter-wrapper">
+            <canvas id="weg-leinwand" class="leinwand-gitter" role="img" aria-label="Gitter mit Wänden, Sumpf, Start und Ziel"></canvas>
+          </div>
+          <ul class="legende" aria-label="Farbcode">
+            <li><span class="muster muster-neutral"></span>unberührt</li>
+            <li><span class="muster muster-sumpf"></span>Sumpf (Kosten 5 statt 1)</li>
+            <li><span class="muster muster-pruefen">?</span>wird gerade untersucht</li>
+            <li><span class="muster muster-aendern">+</span>gerade entdeckt</li>
+            <li><span class="muster muster-bereich"></span>schon besucht</li>
+            <li><span class="muster muster-fertig">✓</span>Teil des Wegs</li>
+          </ul>
+        </div>
+
+        <aside class="seitenleiste">
+          <div class="feld feld-code">
+            <div class="feld-kopf">
+              <h2 class="feld-titel">Code</h2>
+              <div class="feld-kopf-werkzeuge">
+                <div class="auswahl auswahl-klein" id="weg-sprache" role="group" aria-label="Sprache wählen">
+                  <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                  <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                  <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                </div>
+                <button type="button" class="knopf knopf-klein" id="weg-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+              </div>
+            </div>
+            <div class="code" id="weg-code"></div>
+          </div>
+          <div class="feld feld-variablen">
+            <h2 class="feld-titel">Schreibtischtest</h2>
+            <div class="schreibtisch" id="weg-schreibtisch"></div>
+          </div>
+        </aside>
+      </div>
+
+      <p class="erklaerung" id="weg-erklaerung" aria-live="polite"></p>
+
+      <div class="zaehler">
+        <span>Besuchte Felder: <strong id="weg-besucht">0</strong></span>
+        <span>Weglänge: <strong id="weg-weglaenge">–</strong></span>
+        <span>Wegkosten: <strong id="weg-kosten">–</strong></span>
+        <span>Schritte: <strong id="weg-schritte">0</strong></span>
+      </div>
+    </section>
+
+    <!-- ============ Strukturen ============ -->
+    <section class="seite labor" data-seite="strukturen" hidden>
+      <div class="labor-kopf">
+        <div class="auswahl" id="strukturen-auswahl" role="group" aria-label="Struktur wählen">
+          <button type="button" data-struktur="stapel" aria-pressed="true">Stapel</button>
+          <button type="button" data-struktur="warteschlange" aria-pressed="false">Warteschlange</button>
+          <button type="button" data-struktur="suchbaum" aria-pressed="false">Suchbaum</button>
+        </div>
+      </div>
+
+      <p class="hinweis-klein">Tipp: TRACE ist für große Bildschirme gedacht, funktioniert aber auch hier.</p>
+
+      <!-- Stapel -->
+      <div data-struktur-panel="stapel">
+        <div class="einstellungen">
+          <label class="regler regler-breit">
+            <span>Operationen</span>
+            <input type="text" id="stapel-eingabe" placeholder="z. B. 5, 3, 8, -, 2, -, -" autocomplete="off">
+          </label>
+          <button type="button" class="knopf" id="stapel-anwenden">Anwenden</button>
+          <button type="button" class="knopf" id="stapel-zufall" title="Zufälliges Beispiel einsetzen">🎲 Beispiel</button>
+        </div>
+        <p class="eigene-hinweis" id="stapel-hinweis" aria-live="polite"></p>
+        <p class="info-hinweis">Eine Zahl legt einen Wert oben auf den Stapel (Push), ein „-“ nimmt den obersten wieder herunter (Pop).</p>
+
+        <div class="steuerung">
+          <div class="steuerung-knoepfe">
+            <button type="button" class="knopf" id="stapel-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+            <button type="button" class="knopf knopf-haupt" id="stapel-start" title="Start / Pause (Leertaste)">▶ Start</button>
+            <button type="button" class="knopf" id="stapel-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+          </div>
+          <label class="regler">
+            <span>Tempo</span>
+            <input type="range" id="stapel-tempo" min="1" max="10" value="5">
+          </label>
+          <button type="button" class="knopf" id="stapel-zuruecksetzen" title="Zurück zum Anfang">↺ Zurücksetzen</button>
+        </div>
+
+        <div class="labor-raster">
+          <div class="feld feld-bild">
+            <div class="infokasten" id="stapel-info"></div>
+            <div class="ketten-wrapper">
+              <canvas id="stapel-leinwand" class="leinwand-kette" role="img" aria-label="Stapel"></canvas>
+            </div>
+            <ul class="legende" aria-label="Farbcode">
+              <li><span class="muster muster-neutral"></span>im Stapel</li>
+              <li><span class="muster muster-aendern">+</span>gerade aufgelegt</li>
+            </ul>
+          </div>
+          <aside class="seitenleiste">
+            <div class="feld feld-code">
+              <div class="feld-kopf">
+                <h2 class="feld-titel">Code</h2>
+                <div class="feld-kopf-werkzeuge">
+                  <div class="auswahl auswahl-klein" id="stapel-sprache" role="group" aria-label="Sprache wählen">
+                    <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                    <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                    <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                  </div>
+                  <button type="button" class="knopf knopf-klein" id="stapel-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+                </div>
+              </div>
+              <div class="code" id="stapel-code"></div>
+            </div>
+            <div class="feld feld-variablen">
+              <h2 class="feld-titel">Schreibtischtest</h2>
+              <div class="schreibtisch" id="stapel-schreibtisch"></div>
+            </div>
+          </aside>
+        </div>
+
+        <p class="erklaerung" id="stapel-erklaerung" aria-live="polite"></p>
+
+        <div class="zaehler">
+          <span>Elemente: <strong id="stapel-groesse">0</strong></span>
+          <span>Operationen: <strong id="stapel-operationen">0</strong></span>
+          <span>Schritte: <strong id="stapel-schritte">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Warteschlange -->
+      <div data-struktur-panel="warteschlange" hidden>
+        <div class="einstellungen">
+          <label class="regler regler-breit">
+            <span>Operationen</span>
+            <input type="text" id="warteschlange-eingabe" placeholder="z. B. 5, 3, 8, -, 2, -, -" autocomplete="off">
+          </label>
+          <button type="button" class="knopf" id="warteschlange-anwenden">Anwenden</button>
+          <button type="button" class="knopf" id="warteschlange-zufall" title="Zufälliges Beispiel einsetzen">🎲 Beispiel</button>
+        </div>
+        <p class="eigene-hinweis" id="warteschlange-hinweis" aria-live="polite"></p>
+        <p class="info-hinweis">Eine Zahl reiht einen Wert hinten in die Warteschlange ein (Enqueue), ein „-“ nimmt den vordersten wieder heraus (Dequeue).</p>
+
+        <div class="steuerung">
+          <div class="steuerung-knoepfe">
+            <button type="button" class="knopf" id="warteschlange-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+            <button type="button" class="knopf knopf-haupt" id="warteschlange-start" title="Start / Pause (Leertaste)">▶ Start</button>
+            <button type="button" class="knopf" id="warteschlange-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+          </div>
+          <label class="regler">
+            <span>Tempo</span>
+            <input type="range" id="warteschlange-tempo" min="1" max="10" value="5">
+          </label>
+          <button type="button" class="knopf" id="warteschlange-zuruecksetzen" title="Zurück zum Anfang">↺ Zurücksetzen</button>
+        </div>
+
+        <div class="labor-raster">
+          <div class="feld feld-bild">
+            <div class="infokasten" id="warteschlange-info"></div>
+            <div class="ketten-wrapper">
+              <canvas id="warteschlange-leinwand" class="leinwand-kette" role="img" aria-label="Warteschlange"></canvas>
+            </div>
+            <ul class="legende" aria-label="Farbcode">
+              <li><span class="muster muster-neutral"></span>in der Warteschlange</li>
+              <li><span class="muster muster-aendern">+</span>gerade eingereiht</li>
+            </ul>
+          </div>
+          <aside class="seitenleiste">
+            <div class="feld feld-code">
+              <div class="feld-kopf">
+                <h2 class="feld-titel">Code</h2>
+                <div class="feld-kopf-werkzeuge">
+                  <div class="auswahl auswahl-klein" id="warteschlange-sprache" role="group" aria-label="Sprache wählen">
+                    <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                    <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                    <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                  </div>
+                  <button type="button" class="knopf knopf-klein" id="warteschlange-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+                </div>
+              </div>
+              <div class="code" id="warteschlange-code"></div>
+            </div>
+            <div class="feld feld-variablen">
+              <h2 class="feld-titel">Schreibtischtest</h2>
+              <div class="schreibtisch" id="warteschlange-schreibtisch"></div>
+            </div>
+          </aside>
+        </div>
+
+        <p class="erklaerung" id="warteschlange-erklaerung" aria-live="polite"></p>
+
+        <div class="zaehler">
+          <span>Elemente: <strong id="warteschlange-groesse">0</strong></span>
+          <span>Operationen: <strong id="warteschlange-operationen">0</strong></span>
+          <span>Schritte: <strong id="warteschlange-schritte">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Suchbaum -->
+      <div data-struktur-panel="suchbaum" hidden>
+        <div class="einstellungen">
+          <label class="regler regler-breit">
+            <span>Werte einfügen</span>
+            <input type="text" id="suchbaum-werte" placeholder="z. B. 50, 30, 70, 20, 40, 60, 80" autocomplete="off">
+          </label>
+          <label class="regler">
+            <span>Suche nach</span>
+            <input type="number" id="suchbaum-ziel" inputmode="numeric">
+          </label>
+          <button type="button" class="knopf" id="suchbaum-anwenden">Anwenden</button>
+          <button type="button" class="knopf" id="suchbaum-zufall" title="Zufälliges Beispiel einsetzen">🎲 Beispiel</button>
+        </div>
+        <p class="eigene-hinweis" id="suchbaum-hinweis" aria-live="polite"></p>
+        <p class="info-hinweis">Tipp: Gib sortierte Werte ein (z. B. „1, 2, 3, 4, 5, 6, 7“), um zu sehen, wie der Baum zu einer Liste entartet.</p>
+
+        <div class="steuerung">
+          <div class="steuerung-knoepfe">
+            <button type="button" class="knopf" id="suchbaum-zurueck" title="Schritt zurück (Pfeil links)">◀ Schritt</button>
+            <button type="button" class="knopf knopf-haupt" id="suchbaum-start" title="Start / Pause (Leertaste)">▶ Start</button>
+            <button type="button" class="knopf" id="suchbaum-vor" title="Schritt vor (Pfeil rechts)">Schritt ▶</button>
+          </div>
+          <label class="regler">
+            <span>Tempo</span>
+            <input type="range" id="suchbaum-tempo" min="1" max="10" value="5">
+          </label>
+          <button type="button" class="knopf" id="suchbaum-zuruecksetzen" title="Zurück zum Anfang">↺ Zurücksetzen</button>
+        </div>
+
+        <div class="labor-raster">
+          <div class="feld feld-bild">
+            <div class="infokasten" id="suchbaum-info"></div>
+            <div class="baum-wrapper">
+              <canvas id="suchbaum-leinwand" class="leinwand-baum" role="img" aria-label="Binärer Suchbaum"></canvas>
+            </div>
+            <ul class="legende" aria-label="Farbcode">
+              <li><span class="muster muster-neutral"></span>unberührt</li>
+              <li><span class="muster muster-pruefen">?</span>wird verglichen</li>
+              <li><span class="muster muster-aendern">+</span>wird eingefügt</li>
+              <li><span class="muster muster-bereich"></span>schon durchlaufen</li>
+              <li><span class="muster muster-fertig">✓</span>gefunden</li>
+            </ul>
+          </div>
+          <aside class="seitenleiste">
+            <div class="feld feld-code">
+              <div class="feld-kopf">
+                <h2 class="feld-titel">Code</h2>
+                <div class="feld-kopf-werkzeuge">
+                  <div class="auswahl auswahl-klein" id="suchbaum-sprache" role="group" aria-label="Sprache wählen">
+                    <button type="button" data-sprache="pseudocode" aria-pressed="true">Pseudocode</button>
+                    <button type="button" data-sprache="csharp" aria-pressed="false">C#</button>
+                    <button type="button" data-sprache="javascript" aria-pressed="false">JavaScript</button>
+                  </div>
+                  <button type="button" class="knopf knopf-klein" id="suchbaum-kopieren" title="Code in die Zwischenablage kopieren" aria-label="Code in die Zwischenablage kopieren">📋</button>
+                </div>
+              </div>
+              <div class="code" id="suchbaum-code"></div>
+            </div>
+            <div class="feld feld-variablen">
+              <h2 class="feld-titel">Schreibtischtest</h2>
+              <div class="schreibtisch" id="suchbaum-schreibtisch"></div>
+            </div>
+          </aside>
+        </div>
+
+        <p class="erklaerung" id="suchbaum-erklaerung" aria-live="polite"></p>
+
+        <div class="zaehler">
+          <span>Vergleiche: <strong id="suchbaum-vergleiche">0</strong></span>
+          <span>Schritte: <strong id="suchbaum-schritte">0</strong></span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="fuss">TRACE by Julian Harder</footer>
+
+  <!-- Normale Skripte statt ES-Module, damit index.html per Doppelklick läuft. Reihenfolge ist wichtig. -->
+  <script src="js/player.js"></script>
+  <script src="js/ui/theme.js"></script>
+  <script src="js/ui/codeansicht.js"></script>
+  <script src="js/ui/schreibtisch.js"></script>
+  <script src="js/sortieren/ansicht.js"></script>
+  <script src="js/sortieren/bereich.js"></script>
+  <script src="js/sortieren/bubble.js"></script>
+  <script src="js/sortieren/selection.js"></script>
+  <script src="js/sortieren/insertion.js"></script>
+  <script src="js/sortieren/merge.js"></script>
+  <script src="js/sortieren/quick.js"></script>
+  <script src="js/suchen/ansicht.js"></script>
+  <script src="js/suchen/bereich.js"></script>
+  <script src="js/suchen/linear.js"></script>
+  <script src="js/suchen/binaer.js"></script>
+  <script src="js/wegfindung/gitter.js"></script>
+  <script src="js/wegfindung/bereich.js"></script>
+  <script src="js/wegfindung/bfs.js"></script>
+  <script src="js/wegfindung/dfs.js"></script>
+  <script src="js/wegfindung/dijkstra.js"></script>
+  <script src="js/wegfindung/astar.js"></script>
+  <script src="js/strukturen/kette.js"></script>
+  <script src="js/strukturen/stapel.js"></script>
+  <script src="js/strukturen/warteschlange.js"></script>
+  <script src="js/strukturen/baumansicht.js"></script>
+  <script src="js/strukturen/suchbaum.js"></script>
+  <script src="js/strukturen/bereich.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

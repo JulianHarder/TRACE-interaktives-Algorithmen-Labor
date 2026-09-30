@@ -1,0 +1,922 @@
+/* ==========================================================================
+   TRACE – interaktives Algorithmen-Labor
+   Alle Farben stehen als Variablen oben. Der Farbcode (neutral, prüfen,
+   ändern, bereich, fertig) wird auch vom Canvas-Code ausgelesen.
+   ========================================================================== */
+
+:root {
+  --hintergrund: #f5f6f8;
+  --flaeche: #ffffff;
+  --flaeche-2: #eef0f4;
+  --text: #1c2230;
+  --text-leise: #5d6677;
+  --rand: #e1e4ea;
+
+  /* Farbcode (Abschnitt 7 im Projektplan) */
+  --neutral: #c2c8d3;
+  --pruefen: #e2a31f;
+  --aendern: #e4653e;
+  --bereich: #3a7bd5;
+  --fertig: #1ea386;
+  --bereich-flaeche: rgba(58, 123, 213, 0.09);
+  --sumpf: #8a6d3b;
+
+  --code-aktiv: rgba(226, 163, 31, 0.2);
+  --knopf-haupt: #1c2230;
+  --knopf-haupt-text: #ffffff;
+
+  --schatten: 0 1px 2px rgba(20, 25, 35, 0.05), 0 4px 14px rgba(20, 25, 35, 0.04);
+  --radius: 12px;
+  --schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", monospace;
+}
+
+/* Dunkles Schema: automatisch nach Systemeinstellung, außer der Knopf im
+   Kopfbereich hat explizit "Hell" erzwungen (dann greift die :not-Regel
+   nicht). "Dunkel" erzwingen funktioniert unabhängig vom System über die
+   zweite Regel unten – siehe js/ui/theme.js. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="hell"]) {
+    --hintergrund: #11141a;
+    --flaeche: #191d25;
+    --flaeche-2: #222733;
+    --text: #e6e9ef;
+    --text-leise: #9aa3b3;
+    --rand: #2a303c;
+
+    --neutral: #4a5263;
+    --pruefen: #f0b64a;
+    --aendern: #f07a5c;
+    --bereich: #5f9cf0;
+    --fertig: #3cc3a5;
+    --bereich-flaeche: rgba(95, 156, 240, 0.12);
+    --sumpf: #b6935a;
+
+    --code-aktiv: rgba(240, 182, 74, 0.18);
+    --knopf-haupt: #e6e9ef;
+    --knopf-haupt-text: #11141a;
+
+    --schatten: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="dunkel"] {
+  --hintergrund: #11141a;
+  --flaeche: #191d25;
+  --flaeche-2: #222733;
+  --text: #e6e9ef;
+  --text-leise: #9aa3b3;
+  --rand: #2a303c;
+
+  --neutral: #4a5263;
+  --pruefen: #f0b64a;
+  --aendern: #f07a5c;
+  --bereich: #5f9cf0;
+  --fertig: #3cc3a5;
+  --bereich-flaeche: rgba(95, 156, 240, 0.12);
+  --sumpf: #b6935a;
+
+  --code-aktiv: rgba(240, 182, 74, 0.18);
+  --knopf-haupt: #e6e9ef;
+  --knopf-haupt-text: #11141a;
+
+  --schatten: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Grundlagen
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--hintergrund);
+  color: var(--text);
+  font-family: var(--schrift);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--bereich);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Kopfzeile und Fußzeile
+   -------------------------------------------------------------------------- */
+
+.kopf {
+  background: var(--flaeche);
+  border-bottom: 1px solid var(--rand);
+}
+
+.kopf-innen {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.marke {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+
+.hauptnav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.knopf-theme {
+  margin-left: auto;
+  padding: 6px 10px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.hauptnav a {
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--text-leise);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.hauptnav a:hover {
+  color: var(--text);
+  background: var(--flaeche-2);
+}
+
+.hauptnav a[aria-current="page"] {
+  color: var(--text);
+  background: var(--flaeche-2);
+}
+
+.inhalt {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+}
+
+.fuss {
+  padding: 16px 20px 24px;
+  text-align: center;
+  color: var(--text-leise);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+/* --------------------------------------------------------------------------
+   Startseite
+   -------------------------------------------------------------------------- */
+
+.start-titel {
+  text-align: center;
+  padding: 40px 0 36px;
+}
+
+.start-titel h1 {
+  font-size: clamp(48px, 10vw, 88px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin-right: -0.16em; /* gleicht den Buchstabenabstand am Ende aus */
+}
+
+.untertitel {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: var(--text-leise);
+}
+
+.einleitung {
+  max-width: 560px;
+  margin: 20px auto 0;
+  color: var(--text-leise);
+}
+
+.kacheln {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.kachel {
+  position: relative;
+  display: block;
+  padding: 20px;
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.kachel:hover {
+  transform: translateY(-2px);
+  border-color: var(--text-leise);
+}
+
+.kachel h2 {
+  font-size: 18px;
+  margin-top: 14px;
+}
+
+.kachel p {
+  margin: 4px 0 0;
+  color: var(--text-leise);
+  font-size: 14px;
+}
+
+.kachel-bild {
+  width: 80px;
+  height: 48px;
+  display: block;
+}
+
+.bild-neutral { fill: var(--neutral); }
+.bild-pruefen { fill: var(--pruefen); }
+.bild-fertig  { fill: var(--fertig); }
+.bild-bereich { fill: var(--bereich); }
+.bild-leer    { fill: var(--flaeche-2); }
+.bild-wand    { fill: var(--text-leise); }
+.bild-linie   { stroke: var(--neutral); stroke-width: 2; }
+
+/* --------------------------------------------------------------------------
+   Knöpfe und Regler
+   -------------------------------------------------------------------------- */
+
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.knopf:hover:not(:disabled) {
+  background: var(--flaeche-2);
+}
+
+.knopf:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.knopf-haupt {
+  min-width: 120px;
+  background: var(--knopf-haupt);
+  border-color: var(--knopf-haupt);
+  color: var(--knopf-haupt-text);
+}
+
+.knopf-haupt:hover:not(:disabled) {
+  background: var(--knopf-haupt);
+  opacity: 0.88;
+}
+
+.regler {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-leise);
+  font-size: 14px;
+}
+
+.regler input[type="range"] {
+  width: 140px;
+  accent-color: var(--text);
+}
+
+.regler output {
+  min-width: 2.5ch;
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.regler input[type="number"] {
+  width: 90px;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--rand);
+  border-radius: 7px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.regler select {
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--rand);
+  border-radius: 7px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+/* Nur für Screenreader sichtbar, z. B. Beschriftung eines Textfelds ohne sichtbares Label. */
+.sr-nur {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Labor-Layout (gilt für alle Bereiche)
+   -------------------------------------------------------------------------- */
+
+.labor-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.auswahl {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--flaeche-2);
+  border-radius: 10px;
+}
+
+.auswahl button {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-leise);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auswahl button:hover {
+  color: var(--text);
+}
+
+.auswahl button[aria-pressed="true"] {
+  background: var(--flaeche);
+  color: var(--text);
+  box-shadow: var(--schatten);
+}
+
+.einstellungen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hinweis-klein {
+  display: none;
+  margin: -4px 0 12px;
+  font-size: 13px;
+  color: var(--text-leise);
+}
+
+.info-hinweis {
+  margin: 0 0 16px;
+  padding: 8px 14px;
+  background: var(--flaeche-2);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-leise);
+}
+
+.eigene-zahlen {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.eigene-label {
+  flex: 1 1 260px;
+}
+
+#sort-eigene-eingabe {
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 12px;
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}
+
+.eigene-hinweis {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-leise);
+}
+
+.eigene-hinweis:empty {
+  display: none;
+}
+
+.labor-raster {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 460px);
+  gap: 16px;
+}
+
+.feld {
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  padding: 16px;
+  min-width: 0;
+}
+
+.feld-titel {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-leise);
+  margin-bottom: 10px;
+}
+
+.feld-kopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.feld-kopf .feld-titel {
+  margin-bottom: 0;
+}
+
+.auswahl-klein {
+  padding: 2px;
+  gap: 2px;
+}
+
+.auswahl-klein button {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+
+.feld-kopf-werkzeuge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.knopf-klein {
+  min-height: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.seitenleiste {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Visualisierung */
+
+.feld-bild {
+  display: flex;
+  flex-direction: column;
+}
+
+.leinwand {
+  display: block;
+  width: 100%;
+  height: clamp(260px, 46vh, 460px);
+}
+
+/* Kästchen-Darstellung (Suchen): Kästchen bleiben immer lesbar breit; reichen
+   sie nicht in eine Reihe, brechen die restlichen in die nächste Reihe um
+   (wie Text), statt seitlich wegzuscrollen. Erst wenn das zu hoch wird,
+   scrollt dieser Wrapper senkrecht. Breite und Höhe der Canvas setzt
+   ansicht.js per JS, je nachdem wie viele Reihen gebraucht werden. */
+.kaesten-wrapper {
+  max-height: clamp(260px, 46vh, 460px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.leinwand-kaesten {
+  display: block;
+}
+
+/* Gitter (Wegfindung): feste Anzahl Felder, die Kästchengröße passt sich der
+   Breite an. Höhe ergibt sich daraus automatisch (kein Scrollen nötig). */
+.gitter-wrapper {
+  line-height: 0; /* verhindert einen Streifen Leerraum unter dem Canvas */
+}
+
+.leinwand-gitter {
+  display: block;
+  cursor: pointer;
+  touch-action: none; /* eigenes Ziehen per Finger, kein Scrollen der Seite dabei */
+}
+
+/* Kette (Stapel/Warteschlange): wächst in der Höhe (Stapel) bzw. bricht bei
+   Bedarf um (Warteschlange, wie die Kästchen beim Suchen), scrollt senkrecht
+   statt seitlich, wenn sie zu groß wird. */
+.ketten-wrapper {
+  max-height: clamp(220px, 40vh, 400px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.leinwand-kette {
+  display: block;
+}
+
+/* Baum (Suchbaum): Die Form ist Teil der Aussage und darf nicht umbrechen,
+   deshalb scrollt hier ausnahmsweise waagerecht (siehe baumansicht.js). */
+.baum-wrapper {
+  max-height: clamp(260px, 46vh, 460px);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.leinwand-baum {
+  display: block;
+}
+
+.regler-breit {
+  flex: 1 1 280px;
+}
+
+.regler-breit input[type="text"] {
+  width: 100%;
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 1px solid var(--rand);
+  border-radius: 7px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.infokasten {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-leise);
+}
+
+.infokasten p {
+  margin: 0 0 8px;
+}
+
+.infokasten .einsatz {
+  margin: 8px 0 0;
+}
+
+.infokasten strong {
+  color: var(--text);
+}
+
+.kennzahlen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kennzahlen li {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--flaeche-2);
+  font-size: 13px;
+}
+
+.kennzahlen b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-leise);
+}
+
+.legende li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.muster {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  padding: 0 2px;
+  height: 16px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.muster-neutral { background: var(--neutral); }
+.muster-pruefen { background: var(--pruefen); }
+.muster-aendern { background: var(--aendern); }
+.muster-bereich { background: var(--bereich); }
+.muster-fertig  { background: var(--fertig); }
+.muster-sumpf   { background: var(--sumpf); }
+
+/* Code-Ansicht */
+
+.code {
+  position: relative;
+  max-height: 340px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.code ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: zeile;
+}
+
+.code li {
+  counter-increment: zeile;
+  display: flex;
+  border-radius: 4px;
+  border-left: 3px solid transparent;
+  white-space: pre;
+}
+
+.code li::before {
+  content: counter(zeile);
+  flex: 0 0 2.2em;
+  padding-right: 0.8em;
+  text-align: right;
+  color: var(--text-leise);
+  opacity: 0.6;
+  user-select: none;
+}
+
+.code li.aktiv {
+  background: var(--code-aktiv);
+  border-left-color: var(--pruefen);
+}
+
+.code li.aktiv::before {
+  opacity: 1;
+  color: var(--text);
+}
+
+.code .schluessel {
+  font-weight: 700;
+  color: var(--bereich);
+}
+
+.code .kommentar {
+  color: var(--text-leise);
+  font-style: italic;
+}
+
+/* Schreibtischtest */
+
+.schreibtisch {
+  position: relative;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.schreibtisch-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.schreibtisch-tabelle th,
+.schreibtisch-tabelle td {
+  padding: 5px 10px;
+  text-align: right;
+}
+
+.schreibtisch-tabelle thead th {
+  position: sticky;
+  top: 0;
+  background: var(--flaeche);
+  color: var(--text-leise);
+  font-weight: 600;
+  text-align: right;
+  border-bottom: 1px solid var(--rand);
+}
+
+.schreibtisch-tabelle th:first-child,
+.schreibtisch-tabelle td:first-child {
+  text-align: left;
+  color: var(--text-leise);
+}
+
+.schreibtisch-nummer {
+  color: var(--text-leise);
+}
+
+.schreibtisch-tabelle tbody tr:nth-child(even) {
+  background: var(--flaeche-2);
+}
+
+.schreibtisch-tabelle tr.aktiv {
+  outline: 2px solid var(--pruefen);
+  outline-offset: -2px;
+  background: var(--code-aktiv);
+}
+
+.schreibtisch-tabelle td.geaendert {
+  color: var(--pruefen);
+  font-weight: 700;
+}
+
+.schreibtisch-hinweis {
+  margin: 10px 2px 2px;
+  font-size: 12px;
+  color: var(--text-leise);
+  white-space: normal;
+}
+
+/* Erklärung, Steuerung, Zähler */
+
+.erklaerung {
+  margin: 16px 0 0;
+  padding: 14px 18px;
+  min-height: 3.4em;
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-left: 4px solid var(--text);
+  border-radius: var(--radius);
+  font-size: 17px;
+}
+
+.steuerung {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 16px 0;
+}
+
+.steuerung-knoepfe {
+  display: flex;
+  gap: 8px;
+}
+
+.zaehler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--text-leise);
+}
+
+.zaehler strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Kleine Bildschirme
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .labor-raster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .code {
+    max-height: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  .kopf-innen,
+  .inhalt {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .kopf-innen {
+    gap: 8px 16px;
+  }
+
+  .hinweis-klein {
+    display: block;
+  }
+
+  .labor-kopf,
+  .einstellungen {
+    width: 100%;
+  }
+
+  .regler input[type="range"] {
+    width: 110px;
+  }
+
+  .steuerung-knoepfe {
+    width: 100%;
+  }
+
+  .steuerung-knoepfe .knopf {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .erklaerung {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kachel {
+    transition: none;
+  }
+}
