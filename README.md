@@ -35,7 +35,7 @@ Jeder Algorithmus bringt mit:
 
 `index.html` per Doppelklick öffnen. Es wird kein Server und keine Installation gebraucht.
 
-Wer es online sehen will, ohne die Datei herunterzuladen: **[Live-Demo auf GitHub Pages]()** *(Link nach der Veröffentlichung hier eintragen)*
+Wer es online sehen will, ohne die Datei herunterzuladen: **[Live-Demo auf GitHub Pages](https://julianharder.github.io/TRACE-interaktives-Algorithmen-Labor/)** 
 
 ## Bedienung
 
